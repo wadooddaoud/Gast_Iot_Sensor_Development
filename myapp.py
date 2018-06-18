@@ -91,7 +91,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\", \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Pressure\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\", \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #not too sure about this method yet. I think it recieves data from the IOT hub as a confirmation that the data was recieved
 def receive_message_callback(message, counter):
@@ -181,7 +181,7 @@ def iothub_client_sample_run():
 		am2302Humidity,am2302Pressure = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		bme280Pressure = bme280Sensor.read_pressure()
                 transducerPressure  = (mcp.read_adc(7)-75)*150.0/835.0
-                msg_text_formatted = MSG_TXT %(globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,am2302Pressure,am2302Humidity)
+                msg_text_formatted = MSG_TXT %(globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,am2302Temperature,am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
                 

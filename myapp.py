@@ -178,7 +178,7 @@ def iothub_client_sample_run():
                 sht20Humidity = GetShtHumid()
                 bme280Temperature = bme280Sensor.read_temperature_f()
                 bme280Humidity = bme280Sensor.read_humidity()
-		am2302Humidity,am2302Pressure = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
+		am2302Humidity,am2302Temperature = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		bme280Pressure = bme280Sensor.read_pressure()
                 transducerPressure  = (mcp.read_adc(7)-75)*150.0/835.0
                 msg_text_formatted = MSG_TXT %(globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,am2302Temperature,am2302Humidity)

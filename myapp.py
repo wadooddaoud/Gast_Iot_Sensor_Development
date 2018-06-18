@@ -6,6 +6,7 @@ from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubE
 import RPi.GPIO as GPIO
 import sys,re
 import math
+import numpy as np
 #Import the firmware code from the Adafruit BM280 temp and humidity sensor
 from Adafruit_BME280 import *
 
@@ -37,6 +38,7 @@ compRunning = False
 startTime = 0
 globalTimeOn = 0
 endTime = 0
+dutyCycleArray = []
 
 #creating DHT sensor object
 DHTsensor = Adafruit_DHT.DHT22
@@ -152,6 +154,7 @@ def print_last_message_time(client):
 def iothub_client_sample_run():
     global compRunning
     global globalTimeOn
+    global dutyCycleArray
     try:
         client = iothub_client_init()
         if client.protocol == IoTHubTransportProvider.MQTT:
@@ -165,14 +168,18 @@ def iothub_client_sample_run():
             if MESSAGE_SWITCH:
                 print ( "IoTHubClient sending %d messages...boom" % MESSAGE_COUNT )
                 compState = CheckCompressorState()
+                dutyCycleArray.append(compState)
+                if len(dutyCycleArray) > 100:
+                    dutyCycle = calculateDutyCycle
+                    print("The Duty Cycle is: %f" % dutyCycle)
                 #reading data from sensors and formatting messages to be sent to client(iotHub)
                 thermocoupleTemperature = c_to_f(max_sensor.readTempC())
                 sht20Temperature = GetShtTemp_f()
                 sht20Humidity = GetShtHumid()
                 bme280Temperature = bme280Sensor.read_temperature_f()
                 bme280Humidity = bme280Sensor.read_humidity()
-		am2302Humidity,am2302Pressure = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
-		bme280Pressure = bme280Sensor.read_pressure()
+		        am2302Humidity,am2302Pressure = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
+		        bme280Pressure = bme280Sensor.read_pressure()
                 transducerPressure  = (mcp.read_adc(7)-75)*150.0/835.0
                 msg_text_formatted = MSG_TXT %(compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,am2302Pressure,am2302Humidity)
                 print(msg_text_formatted)
@@ -309,6 +316,13 @@ def CheckCompressorState():
         return 1
     else:
         return 0
+
+def calculateDutyCycle():
+    global dutyCycleArray
+    y = np.array(dutyCycleArray)
+    num_zeros = (y == 0).sum()
+    num_ones = (y == 1).sum()
+    return (num_ones/num_zeros)
 
 if __name__ == "__main__":
     print("\nPython %s" % sys.version)

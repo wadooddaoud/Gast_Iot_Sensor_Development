@@ -42,6 +42,7 @@ am2302TemperatureArray = []
 bme280PressureArray = []
 transducerPressureArray = []
 
+
   
 #Setting the variables needed for the Current sensor code
 vRMS = 120.0
@@ -106,7 +107,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\", \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #not too sure about this method yet. I think it recieves data from the IOT hub as a confirmation that the data was recieved
 def receive_message_callback(message, counter):
@@ -196,7 +197,8 @@ def iothub_client_sample_run():
 		am2302Humidity,am2302Temperature = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		bme280Pressure = (bme280Sensor.read_pressure())*.000145038
                 transducerPressure  = (mcp.read_adc(7)-70)*150.0/595.2
-                msg_text_formatted = MSG_TXT %(globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
+                NitroConsumption = globalTimeOn * .0047619047619048
+                msg_text_formatted = MSG_TXT %(NitroConsumption,globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
                 

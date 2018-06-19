@@ -28,6 +28,21 @@ import Adafruit_MCP3008
 #importing the DHT11 sensor library
 import Adafruit_DHT
 
+#Setting the variable for the max length of the arrays storing data
+MAX_ARRAY_LENGTH = 50
+
+#Setting arrays for the temporary storage of data values
+thermocoupleTemperatureArray = []
+sht20TemperatureArray = []
+sht20HumidityArray = []
+bme280TemperatureArray = []
+bme280HumidityArray = []
+am2302HumidityArray = []
+am2302TemperatureArray = []
+bme280PressureArray = []
+transducerPressureArray = []
+
+  
 #Setting the variables needed for the Current sensor code
 vRMS = 120.0
 offset = 2.5
@@ -180,7 +195,7 @@ def iothub_client_sample_run():
                 bme280Humidity = bme280Sensor.read_humidity()
 		am2302Humidity,am2302Temperature = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		bme280Pressure = (bme280Sensor.read_pressure())*.000145038
-                transducerPressure  = (mcp.read_adc(7)-75)*150.0/835.0
+                transducerPressure  = (mcp.read_adc(7)-70)*150.0/595.2
                 msg_text_formatted = MSG_TXT %(globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
@@ -322,6 +337,7 @@ def calculateDutyCycle():
     y = np.array(dutyCycleArray)
     num_ones = (y == 1).sum()
     return (float(num_ones)/len(y))
+
 
 if __name__ == "__main__":
     print("\nPython %s" % sys.version)

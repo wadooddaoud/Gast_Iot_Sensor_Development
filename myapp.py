@@ -61,29 +61,29 @@ DHTsensor = Adafruit_DHT.DHT22
 
 #Configuring SPI Software for the Adafruit_MCP3008 ADC. These are the GPIO numbers
 CLK_mcp = 25
-MISO_mcp = 23
-MOSI_mcp = 24
+MISO_mcp = 24
+MOSI_mcp = 23
 CS_mcp = 18
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK_mcp, cs=CS_mcp, miso=MISO_mcp, mosi=MOSI_mcp)
 
 
 #configuring the SPI software for the MAX31855 Amplifier for the Thermocouple
-CLK_max = 6
-CS_max  = 13
-DO_max  = 26
+CLK_max = 17
+CS_max  = 27
+DO_max  = 22
 max_sensor = MAX31855.MAX31855(CLK_max, CS_max, DO_max)
 
 
 
 #configure pin for Adafruit_DHT11 Sensor
-DHTpin = 21
+DHTpin = 14
 
 
 #Making a telemetry object which will allow this computer to communicate with IotHub
 telemetry = Telemetry()
 
 #pin number for LED 
-LED_PIN_ADDRESS = 12
+LED_PIN_ADDRESS = 4
 
 MESSAGE_COUNT = 0
 MESSAGE_SWITCH = True
@@ -107,7 +107,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGen Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #not too sure about this method yet. I think it recieves data from the IOT hub as a confirmation that the data was recieved
 def receive_message_callback(message, counter):
@@ -219,8 +219,6 @@ def iothub_client_sample_run():
                 status = client.get_send_status()
                 print("Send status is..boom... %s" % status)
                 MESSAGE_COUNT +=1
-            if compRunning == True:
-                globalTimeOn += 2.0
             time.sleep(2)
 
     except IoTHubError as iothub_error:
@@ -238,8 +236,6 @@ def GetShtTemp_f():
     # Send temperature measurement command
     #		0xF3(243)	NO HOLD master
     bus.write_byte(0x40, 0xF3)
-    if compRunning == True:
-        globalTimeOn += 0.5
     time.sleep(0.5)
     shtData0 = bus.read_byte(0x40)
     shtData1 = bus.read_byte(0x40)
@@ -256,8 +252,6 @@ def GetShtTemp_c():
     # Send temperature measurement command
     #		0xF3(243)	NO HOLD master
     bus.write_byte(0x40, 0xF3)
-    if compRunning == True:
-        globalTimeOn += 0.5
     time.sleep(0.5)
     shtData0 = bus.read_byte(0x40)
     shtData1 = bus.read_byte(0x40)
@@ -274,8 +268,6 @@ def GetShtHumid():
     # Send humidity measurement command
     #		0xF5(245)	NO HOLD master
     bus.write_byte(0x40, 0xF5)
-    if compRunning == True:
-        globalTimeOn += 0.5
     time.sleep(0.5)
 
     # SHT25 address, 0x40(64)
@@ -295,8 +287,6 @@ def led_blink():
     global compRunning
     global globalTimeOn
     GPIO.output(LED_PIN_ADDRESS,GPIO.HIGH)
-    if compRunning == True:
-        globalTimeOn += 1
     time.sleep(1) #the time that the LED stays lit for
     GPIO.output(LED_PIN_ADDRESS, GPIO.LOW)
 

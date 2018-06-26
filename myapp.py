@@ -32,15 +32,15 @@ import Adafruit_DHT
 MAX_ARRAY_LENGTH = 50
 
 #Setting arrays for the temporary storage of data values
-thermocoupleTemperatureArray = []
-sht20TemperatureArray = []
-sht20HumidityArray = []
-bme280TemperatureArray = []
-bme280HumidityArray = []
+#thermocoupleTemperatureArray = []
+#sht20TemperatureArray = []
+#sht20HumidityArray = []
+#bme280TemperatureArray = []
+#bme280HumidityArray = []
 am2302HumidityArray = []
-am2302TemperatureArray = []
-bme280PressureArray = []
-transducerPressureArray = []
+#am2302TemperatureArray = []
+#bme280PressureArray = []
+#transducerPressureArray = []
 
 
   
@@ -78,12 +78,11 @@ max_sensor = MAX31855.MAX31855(CLK_max, CS_max, DO_max)
 #configure pin for Adafruit_DHT11 Sensor
 DHTpin = 14
 
+#pin number for LED 
+LED_PIN_ADDRESS = 4
 
 #Making a telemetry object which will allow this computer to communicate with IotHub
 telemetry = Telemetry()
-
-#pin number for LED 
-LED_PIN_ADDRESS = 4
 
 MESSAGE_COUNT = 0
 MESSAGE_SWITCH = True
@@ -184,11 +183,6 @@ def iothub_client_sample_run():
             global MESSAGE_COUNT, MESSAGE_SWITCH
             if MESSAGE_SWITCH:
                 print ( "IoTHubClient sending %d messages...boom" % MESSAGE_COUNT )
-                compState = CheckCompressorState()
-                dutyCycleArray.append(compState)
-                dutyCycle = calculateDutyCycle()
-                if len(dutyCycleArray) > 100:
-                    dutyCycleArray = []
                 #reading data from sensors and formatting messages to be sent to client(iotHub)
                 thermocoupleTemperature = c_to_f(max_sensor.readTempC())
                 sht20Temperature = GetShtTemp_f()
@@ -198,18 +192,26 @@ def iothub_client_sample_run():
 		am2302Humidity,am2302Temperature = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		if am2302Humidity > 100:
                     am2302Humidity = sum(am2302HumidityArray)/float(len(am2302HumidityArray))
+                if len(am2302HumidityArray) > 100:
+                    am2302HumidityArray = am2302HumidityArray[1:50]
 		am2302HumidityArray.append(am2302Humidity)
 		bme280Pressure = (bme280Sensor.read_pressure())*.000145038
                 transducerPressure  = (mcp.read_adc(7)-70)*150.0/595.2
+                compState = CheckCompressorState()
+                dutyCycleArray.append(compState)
+                dutyCycle = calculateDutyCycle()
+                if len(dutyCycleArray) > 100:
+                    dutyCycleArray = dutyCycleArray[1:50]
                 NitroConsumption = globalTimeOn * .0047619047619048
                 msg_text_formatted = MSG_TXT %(NitroConsumption,globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
-                
-
+                # optional: assign ids
+                message.message_id = "message_%d" % MESSAGE_COUNT
+                message.correlation_id = "correlation_%d" % MESSAGE_COUNT
                 #mapping extra properties for the message. basically just adding a temperature warning
                 prop_map = message.properties()
-                prop_map.add("TemperatureAlert..boom","true" if bme280Temperature > 30.0 else "false")
+                prop_map.add("TemperatureAlert... ","true" if bme280Temperature > 90.0 else "false")
 
                 #sending the message to the terminal from iotHub
                 client.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
@@ -217,7 +219,7 @@ def iothub_client_sample_run():
                 
                 #sending  the send status to the terminal from the iotHub
                 status = client.get_send_status()
-                print("Send status is..boom... %s" % status)
+                print("Send status is... %s" % status)
                 MESSAGE_COUNT +=1
             time.sleep(2)
 

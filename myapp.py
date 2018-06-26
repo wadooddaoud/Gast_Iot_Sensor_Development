@@ -94,8 +94,8 @@ RECEIVE_CONTEXT = 0
 SEND_REPORTED_STATE_CALLBACKS = 0
 
 #set the connection string variable as the 2nd parameter that was passed into the application call (i.e. "python app.py  [connection string]"")
-CONNECTION_STRING = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenDeviceID;SharedAccessKey=gZ6QBszztg3zCc5afoDI0cg4nhlDCgZD0vMYPDpMvU0='
-
+CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenDeviceID;SharedAccessKey=gZ6QBszztg3zCc5afoDI0cg4nhlDCgZD0vMYPDpMvU0='
+CONNECTION_STRING_JUNAIR = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
 PROTOCOL = IoTHubTransportProvider.MQTT
@@ -145,9 +145,9 @@ def send_confirmation_callback(message, result, user_context):
     led_blink()
 
 
-def iothub_client_init():
+def iothub_client_init(CONNECTION_STRING_GIVEN, PROTOCOL):
     #prepare the iothub client (basically the iot hub on azure)
-    client = IoTHubClient(CONNECTION_STRING,PROTOCOL)
+    client = IoTHubClient(CONNECTION_STRING_GIVEN,PROTOCOL)
     client.set_option("product_info", "HappyPath_RaspberryPi-Python")
     client.set_option("Message Time Out", 10000 )
     if client.protocol == IoTHubTransportProvider.MQTT:
@@ -172,11 +172,13 @@ def iothub_client_sample_run():
     global dutyCycleArray
     global am2302HumidityArray
     try:
-        client = iothub_client_init()
+        client_nitro = iothub_client_init(CONNECTION_STRING_NITRO, PROTOCOL)
+        client_junair = iothub_client_init(CONNECTION_STRING_JUNAIR, PROTOCOL)
         if client.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
             reported_state = "{\"newState\":\"standBy\"}"
-            client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
+            client_nitro.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
+            client_junair.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
         bme280Sensor = BME280(address= 0x77)
         telemetry.send_telemetry_data(parse_iot_hub_name,"success", "The connection to the IOT Hub has been established!!!...Boom")
         while True:
@@ -214,12 +216,15 @@ def iothub_client_sample_run():
                 prop_map.add("TemperatureAlert... ","true" if bme280Temperature > 90.0 else "false")
 
                 #sending the message to the terminal from iotHub
-                client.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
+                client_nitro.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
+                client_junair.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
                 
                 #sending  the send status to the terminal from the iotHub
-                status = client.get_send_status()
-                print("Send status is... %s" % status)
+                status_nitro = client_nitro.get_send_status()
+                status_junair = client_nitro.get_send_status()
+                print("Send status is... %s" % status_nitro)
+                print("Send status is... %s" % status_junair)
                 MESSAGE_COUNT +=1
             time.sleep(2)
 

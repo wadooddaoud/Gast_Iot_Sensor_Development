@@ -39,9 +39,9 @@ def c_to_f(c):
 # software or hardware SPI.
 
 # Raspberry Pi software SPI configuration.
-CLK = 6
-CS  = 13
-DO  = 26
+CLK = 21
+CS  = 20
+DO  = 16
 sensor = MAX31855.MAX31855(CLK, CS, DO)
 
 # Raspberry Pi hardware SPI configuration.

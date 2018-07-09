@@ -8,7 +8,6 @@ import sys,re
 import math
 import numpy as np
 #Import the firmware code from the Adafruit BM280 temp and humidity sensor
-from Adafruit_BME280 import *
 
 #import the telemetry class which allows communication with iothubclient
 from telemetry import Telemetry
@@ -60,26 +59,26 @@ dutyCycleArray = []
 DHTsensor = Adafruit_DHT.DHT22
 
 #Configuring SPI Software for the Adafruit_MCP3008 ADC. These are the GPIO numbers
-CLK_mcp = 13
-MISO_mcp = 16
-MOSI_mcp = 19
-CS_mcp = 20
+CLK_mcp = 22
+MISO_mcp = 23
+MOSI_mcp = 24
+CS_mcp = 25
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK_mcp, cs=CS_mcp, miso=MISO_mcp, mosi=MOSI_mcp)
 
 
 #configuring the SPI software for the MAX31855 Amplifier for the Thermocouple
-CLK_max = 18
-CS_max  = 17
-DO_max  = 4
+CLK_max = 21
+CS_max  = 20
+DO_max  = 16
 max_sensor = MAX31855.MAX31855(CLK_max, CS_max, DO_max)
 
 
 
 #configure pin for Adafruit_DHT11 Sensor
-DHTpin = 25
+DHTpin = 12
 
 #pin number for LED 
-LED_PIN_ADDRESS = 24
+LED_PIN_ADDRESS = 17
 
 #Making a telemetry object which will allow this computer to communicate with IotHub
 telemetry = Telemetry()
@@ -95,7 +94,7 @@ SEND_REPORTED_STATE_CALLBACKS = 0
 
 #set the connection string variable as the 2nd parameter that was passed into the application call (i.e. "python app.py  [connection string]"")
 CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenDeviceID;SharedAccessKey=gZ6QBszztg3zCc5afoDI0cg4nhlDCgZD0vMYPDpMvU0='
-CONNECTION_STRING_JUNAIR = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
+#CONNECTION_STRING_JUNAIR = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
 PROTOCOL = IoTHubTransportProvider.MQTT
@@ -106,7 +105,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"NitroGen Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f , \"bme280Temperature\": %f,\"bme280Humidity\": %f ,\"bme280Pressure\": %f ,\"thermocoupleTemperature\": %f,\"sht20Temperature\": %f,\"sht20Humidity\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGen Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #not too sure about this method yet. I think it recieves data from the IOT hub as a confirmation that the data was recieved
 def receive_message_callback(message, counter):
@@ -167,19 +166,19 @@ def print_last_message_time(client):
             print ( iothub_client_error )
 
 def iothub_client_sample_run():
+    led_blink()
     global compRunning
     global globalTimeOn
     global dutyCycleArray
     global am2302HumidityArray
     try:
         client_nitro = iothub_client_init(CONNECTION_STRING_NITRO, PROTOCOL)
-        client_junair = iothub_client_init(CONNECTION_STRING_JUNAIR, PROTOCOL)
+        #client_junair = iothub_client_init(CONNECTION_STRING_JUNAIR, PROTOCOL)
         if client_nitro.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
             reported_state = "{\"newState\":\"standBy\"}"
             client_nitro.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
-            client_junair.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
-        bme280Sensor = BME280(address= 0x77)
+            #client_junair.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
         telemetry.send_telemetry_data(parse_iot_hub_name,"success", "The connection to the IOT Hub has been established!!!...Boom")
         while True:
             global MESSAGE_COUNT, MESSAGE_SWITCH
@@ -187,25 +186,20 @@ def iothub_client_sample_run():
                 print ( "IoTHubClient sending %d messages...boom" % MESSAGE_COUNT )
                 #reading data from sensors and formatting messages to be sent to client(iotHub)
                 thermocoupleTemperature = c_to_f(max_sensor.readTempC())
-                sht20Temperature = GetShtTemp_f()
-                sht20Humidity = GetShtHumid()
-                bme280Temperature = bme280Sensor.read_temperature_f()
-                bme280Humidity = bme280Sensor.read_humidity()
 		am2302Humidity,am2302Temperature = Adafruit_DHT.read_retry(DHTsensor,DHTpin)
 		if am2302Humidity > 100:
                     am2302Humidity = sum(am2302HumidityArray)/float(len(am2302HumidityArray))
                 if len(am2302HumidityArray) > 100:
                     am2302HumidityArray = am2302HumidityArray[1:50]
 		am2302HumidityArray.append(am2302Humidity)
-		bme280Pressure = (bme280Sensor.read_pressure())*.000145038
-                transducerPressure  = (mcp.read_adc(7)-70)*150.0/595.2
+                transducerPressure  = (mcp.read_adc(1)-115)*150.0/595.2
                 compState = CheckCompressorState()
                 dutyCycleArray.append(compState)
                 dutyCycle = calculateDutyCycle()
-                if len(dutyCycleArray) > 100:
-                    dutyCycleArray = dutyCycleArray[1:50]
+                if len(dutyCycleArray) > 200:
+                    dutyCycleArray = dutyCycleArray[1:150]
                 NitroConsumption = globalTimeOn * .0047619047619048
-                msg_text_formatted = MSG_TXT %(NitroConsumption,globalTimeOn,dutyCycle,compState,bme280Temperature,bme280Humidity,bme280Pressure,thermocoupleTemperature,sht20Temperature,sht20Humidity,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
+                msg_text_formatted = MSG_TXT %(NitroConsumption,globalTimeOn,dutyCycle,compState,thermocoupleTemperature,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
                 # optional: assign ids
@@ -213,18 +207,18 @@ def iothub_client_sample_run():
                 message.correlation_id = "correlation_%d" % MESSAGE_COUNT
                 #mapping extra properties for the message. basically just adding a temperature warning
                 prop_map = message.properties()
-                prop_map.add("TemperatureAlert... ","true" if bme280Temperature > 90.0 else "false")
+                prop_map.add("TemperatureAlert... ","true" if thermocoupleTemperature > 90.0 else "false")
 
                 #sending the message to the terminal from iotHub
                 client_nitro.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
-                client_junair.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
+                #client_junair.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
                 
                 #sending  the send status to the terminal from the iotHub
                 status_nitro = client_nitro.get_send_status()
-                status_junair = client_nitro.get_send_status()
+                #status_junair = client_nitro.get_send_status()
                 print("Send status is... %s" % status_nitro)
-                print("Send status is... %s" % status_junair)
+                #print("Send status is... %s" % status_junair)
                 MESSAGE_COUNT +=1
             time.sleep(2)
 
@@ -313,20 +307,20 @@ def CheckCompressorState():
     global startTime
     acc = 0.00
     for i in range(numSamples):
-        sample = mcp.read_adc(6)
+        sample = mcp.read_adc(5)-33
         voltage = (float(sample)*5.0)/1023
         voltage = voltage-offset
         iPrimary = (voltage/rBurden)*numTurns
         acc += (iPrimary*iPrimary)
     iRMS = math.sqrt(acc/numSamples)
-    if iRMS > .25 and compRunning == False:
+    if iRMS > .30 and compRunning == False:
         compRunning = True
         startTime = time.time()
-    elif iRMS > .25 and compRunning == True:
+    elif iRMS > .30 and compRunning == True:
         timeElapsed = time.time() - startTime
         startTime = time.time()
         globalTimeOn += timeElapsed
-    elif iRMS <.25 and compRunning == True:
+    elif iRMS <.30 and compRunning == True:
         timeElapsed = time.time() - startTime
         globalTimeOn += timeElapsed
         compRunning = False

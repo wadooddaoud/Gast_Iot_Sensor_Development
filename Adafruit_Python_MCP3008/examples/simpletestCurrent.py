@@ -10,7 +10,7 @@ import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 
 vRMS = 120.0
-offset = 2.5
+offset = 2.50
 numTurns = 2000
 rBurden = 150.0
 numSamples = 1000
@@ -21,10 +21,10 @@ endTime = 0
 
 
 # Software SPI configuration:
-CLK  = 25
+CLK  = 22
 MISO = 23
 MOSI = 24
-CS   = 18
+CS   = 25
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 print("-------")
@@ -33,9 +33,10 @@ print('Reading MCP3008 values for the Current sensor')
 # Main program loop.
 for w in range(75):
     acc = 0.00
+    print(mcp.read_adc(5)-33)
     for i in range(numSamples):
-        sample = mcp.read_adc(6)
-        voltage = (float(sample)*5.0)/1023
+        sample = mcp.read_adc(5)-33
+        voltage = (float(sample)*5)/1023
         voltage = voltage-offset
         iPrimary = (voltage/rBurden)*numTurns
         acc += (iPrimary*iPrimary)

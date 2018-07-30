@@ -10,17 +10,16 @@ To install the dependencies, run the following commands in the raspberry pi term
 
 # Ensure that Raspberry pi GPIO library is installed
 To validate the RPI.GPIO library installation, run the following commmand in the raspberry pi terminal
+     
      sudo pip install RPi.GPIO
 
 # Library Install
 To download the neccesary libraries for the MAX 31855, run the following commands in the rapsberry pi terminal
+
      cd ~
      git clone https://github.com/adafruit/Adafruit_Python_MAX31855.git
      cd Adafruit_Python_MAX31855
      sudo python setup.py install
-
-
-
 
 
 

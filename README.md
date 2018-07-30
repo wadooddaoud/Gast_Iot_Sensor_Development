@@ -1,7 +1,36 @@
+# Getting Started With The Raspberry Pi
+First install the SD card with Raspbian pre-installed and follow prompts to install onto the raspberry pi
+
+#Raspberry Pi login credentials
+
+     username: pi
+     password: raspberry
+
+#Enable I2C and SSH
+On the Interfaces tab, set I2C and SSH to Enable and then click OK
+
+
+#Download Putty onto Windows computer to access raspberry pi "headless" (with no monitor connected to raspberry pi)
+download from https://www.putty.org
+
+#Install Node.js on the pi
+
+     curl -sL http://deb.nodesource.com/setup_4.x | sudo -E bash
+     sudo apt-get -y install nodejs
+
+
 # Installing Git
 To install the Git, run the following commands in the raspberry pi terminal
 
      sudo apt install git-all
+
+
+#Download files from the Gast_Iot_Sensor_Development Git Repository
+
+     git clone https://github.com/wadooddaoud/Gast_Iot_Sensor_Development.git
+     cd Gast_Iot_Sensor_Development
+     sudo npm install
+
 
 # Installing Dependencies and Libraries for MAX 31855 Thermocouple Amplifier
 To install the dependencies and libraries, run the following commands in the raspberry pi terminal
@@ -9,6 +38,7 @@ To install the dependencies and libraries, run the following commands in the ras
      sudo apt-get update
      sudo apt-get install build-essential python-dev python-pip python-smbus git
      cd ~
+     cd Gast_Iot_Sensor_Development
      cd Adafruit_Python_MAX31855
      sudo python setup.py install
 
@@ -22,6 +52,7 @@ To validate the RPI.GPIO library installation, run the following commmand in the
 To install the dependencies and libraries from source (recommended), run the following commands in the raspberry pi terminal
 
     cd ~
+    cd Gast_Iot_Sensor_Development
     cd Adafruit_Python_MCP3008
     sudo python setup.py install
 

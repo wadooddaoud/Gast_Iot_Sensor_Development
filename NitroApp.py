@@ -28,8 +28,8 @@ import Adafruit_MCP3008
 #importing the DHT11 sensor library
 import Adafruit_DHT
 
-#hologram = HologramCloud(dict(), network='cellular')
-#result = hologram.network.connect()
+hologram = HologramCloud(dict(), network='cellular')
+result = hologram.network.connect()
 
 
 

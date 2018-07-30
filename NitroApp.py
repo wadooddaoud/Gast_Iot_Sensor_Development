@@ -3,6 +3,7 @@
 #This is the library for  communicating with the IOT hub on Azure
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider, IoTHubClientResult
 from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubError, DeviceMethodReturnValue
+from Hologram.HologramCloud import HologramCloud
 import RPi.GPIO as GPIO
 import sys,re
 import math
@@ -26,6 +27,11 @@ import Adafruit_MCP3008
 
 #importing the DHT11 sensor library
 import Adafruit_DHT
+
+#hologram = HologramCloud(dict(), network='cellular')
+#result = hologram.network.connect()
+
+
 
 #Setting the variable for the max length of the arrays storing data
 MAX_ARRAY_LENGTH = 50
@@ -75,7 +81,7 @@ max_sensor = MAX31855.MAX31855(CLK_max, CS_max, DO_max)
 
 
 #configure pin for Adafruit_DHT11 Sensor
-DHTpin = 12
+DHTpin = 4
 
 #pin number for LED 
 LED_PIN_ADDRESS = 17
@@ -93,8 +99,8 @@ RECEIVE_CONTEXT = 0
 SEND_REPORTED_STATE_CALLBACKS = 0
 
 #set the connection string variable as the 2nd parameter that was passed into the application call (i.e. "python app.py  [connection string]"")
-CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenDeviceID;SharedAccessKey=gZ6QBszztg3zCc5afoDI0cg4nhlDCgZD0vMYPDpMvU0='
-#CONNECTION_STRING_JUNAIR = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
+CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
+#CONNECTION_STRING_NITRO = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
 PROTOCOL = IoTHubTransportProvider.MQTT
@@ -105,7 +111,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"NitroGen Pi - Python\", \"NitroConsumption\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #not too sure about this method yet. I think it recieves data from the IOT hub as a confirmation that the data was recieved
 def receive_message_callback(message, counter):
@@ -192,14 +198,17 @@ def iothub_client_sample_run():
                 if len(am2302HumidityArray) > 100:
                     am2302HumidityArray = am2302HumidityArray[1:50]
 		am2302HumidityArray.append(am2302Humidity)
-                transducerPressure  = (mcp.read_adc(1)-115)*150.0/595.2
+		# added .0000002 to nitroGeneration because webapp doesnt update with zero
+                transducerPressure  = ((mcp.read_adc(0)-72)*150.0/595.2)+.000002
                 compState = CheckCompressorState()
                 dutyCycleArray.append(compState)
-                dutyCycle = calculateDutyCycle()
+                dutyCycle = calculateDutyCycle()*100
+		timeEpoch = int(time.time())
                 if len(dutyCycleArray) > 200:
                     dutyCycleArray = dutyCycleArray[1:150]
-                NitroConsumption = globalTimeOn * .0047619047619048
-                msg_text_formatted = MSG_TXT %(NitroConsumption,globalTimeOn,dutyCycle,compState,thermocoupleTemperature,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
+                # added .0000002 to nitroGeneration because webapp doesnt update with zero
+                nitroGeneration = (globalTimeOn * .0047619047619048)+ .000002
+                msg_text_formatted = MSG_TXT %(nitroGeneration,timeEpoch,globalTimeOn,dutyCycle,compState,thermocoupleTemperature,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
                 # optional: assign ids
@@ -307,7 +316,7 @@ def CheckCompressorState():
     global startTime
     acc = 0.00
     for i in range(numSamples):
-        sample = mcp.read_adc(5)-33
+        sample = mcp.read_adc(1)
         voltage = (float(sample)*5.0)/1023
         voltage = voltage-offset
         iPrimary = (voltage/rBurden)*numTurns

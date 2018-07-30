@@ -29,8 +29,8 @@ print('-' * 57)
 # Main program loop.
 while True:
     # Read all the ADC channel values in a list.
-    sensorValue = mcp.read_adc(7)
-    psi = (sensorValue-95)*150.0/817
+    sensorValue = mcp.read_adc(0)
+    psi = (sensorValue-72)*150.0/817
     print(sensorValue)
     print("-----")
     psiString = "The current pressure: {0:.2f} ".format(psi)

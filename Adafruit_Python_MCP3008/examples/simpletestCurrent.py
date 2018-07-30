@@ -33,9 +33,9 @@ print('Reading MCP3008 values for the Current sensor')
 # Main program loop.
 for w in range(75):
     acc = 0.00
-    print(mcp.read_adc(5)-33)
+    print(mcp.read_adc(1))
     for i in range(numSamples):
-        sample = mcp.read_adc(5)-33
+        sample = mcp.read_adc(1)
         voltage = (float(sample)*5)/1023
         voltage = voltage-offset
         iPrimary = (voltage/rBurden)*numTurns

@@ -1,19 +1,16 @@
 # Getting Started With The Raspberry Pi
-First install the SD card with Raspbian pre-installed and follow prompts to install onto the raspberry pi
-
-#Raspberry Pi login credentials
+First install the SD card with Raspbian pre-installed and follow prompts to install onto the raspberry pi. Credentials are below
 
      username: pi
      password: raspberry
 
-#Enable I2C and SSH
+# Enable I2C and SSH
 On the Interfaces tab, set I2C and SSH to Enable and then click OK
 
 
-#Download Putty onto Windows computer to access raspberry pi "headless" (with no monitor connected to raspberry pi)
-download from https://www.putty.org
+Download Putty onto Windows from https://www.putty.org computer to access raspberry pi "headless" (with no monitor connected to raspberry pi)
 
-#Install Node.js on the pi
+# Install Node.js on the pi
 
      curl -sL http://deb.nodesource.com/setup_4.x | sudo -E bash
      sudo apt-get -y install nodejs
@@ -25,7 +22,7 @@ To install the Git, run the following commands in the raspberry pi terminal
      sudo apt install git-all
 
 
-#Download files from the Gast_Iot_Sensor_Development Git Repository
+# Download files from the Gast_Iot_Sensor_Development Git Repository
 
      git clone https://github.com/wadooddaoud/Gast_Iot_Sensor_Development.git
      cd Gast_Iot_Sensor_Development

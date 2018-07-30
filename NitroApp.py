@@ -100,7 +100,7 @@ SEND_REPORTED_STATE_CALLBACKS = 0
 
 #set the connection string variable as the 2nd parameter that was passed into the application call (i.e. "python app.py  [connection string]"")
 CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
-#CONNECTION_STRING_NITRO = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
+#CONNECTION_STRING_NITRO = 'HostName=JA-TestProject.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
 PROTOCOL = IoTHubTransportProvider.MQTT

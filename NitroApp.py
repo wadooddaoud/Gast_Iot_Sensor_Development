@@ -32,8 +32,8 @@ import Adafruit_MCP3008
 import Adafruit_DHT
 
 # the first command creates an object which allows connection to the hologram cloud. The next command actually initalizes a connection to the hologram cloud.
-#hologram = HologramCloud(dict(), network='cellular')
-#result = hologram.network.connect()
+hologram = HologramCloud(dict(), network='cellular')
+result = hologram.network.connect()
 
 
 

@@ -5,7 +5,7 @@ First install the SD card with Raspbian pre-installed and follow prompts to inst
      password: raspberry
 
 # Enable I2C and SSH
-On the Interfaces tab, set I2C and SSH to Enable and then click OK
+Click the pi logo, then preferences, then configurations, On the Interfaces tab, set I2C and SSH to Enable and then click OK
 
 
 Download Putty onto Windows from https://www.putty.org computer to access raspberry pi "headless" (with no monitor connected to raspberry pi)
@@ -28,16 +28,12 @@ To install the Git, run the following commands in the raspberry pi terminal
      cd Gast_Iot_Sensor_Development
      sudo npm install
 
+# Compile the C libraries to use the Azure IoT SDKs for Python
+To compile these libraries, run the following commands in the raspberry pi terminal (This may take up to 10 minutes)
 
-# Installing Dependencies and Libraries for MAX 31855 Thermocouple Amplifier
-To install the dependencies and libraries, run the following commands in the raspberry pi terminal
+     sudo chmod u+x setup.sh
+     sudo ./setup.sh
 
-     sudo apt-get update
-     sudo apt-get install build-essential python-dev python-pip python-smbus git
-     cd ~
-     cd Gast_Iot_Sensor_Development
-     cd Adafruit_Python_MAX31855
-     sudo python setup.py install
 
 # Ensure that Raspberry pi GPIO library is installed
 To validate the RPI.GPIO library installation, run the following commmand in the raspberry pi terminal
@@ -45,12 +41,30 @@ To validate the RPI.GPIO library installation, run the following commmand in the
      sudo pip install RPi.GPIO
 
 
+# Installing Dependencies and Libraries for MAX 31855 Thermocouple Amplifier
+To install the dependencies and libraries, run the following commands in the raspberry pi terminal
+
+     sudo apt-get update
+     sudo apt-get upgrade
+     cd ~
+     cd Gast_Iot_Sensor_Development
+     cd Adafruit_Python_MAX31855
+     sudo python setup.py install
+
 # Installing Dependencies and Libraries for Adafruit MCP3008 Anolog to Digital Converter
 To install the dependencies and libraries from source (recommended), run the following commands in the raspberry pi terminal
 
     cd ~
     cd Gast_Iot_Sensor_Development
     cd Adafruit_Python_MCP3008
+    sudo python setup.py install
+
+# Installing Dependencies and Libraries for Adafruit AM2302 Temp and Humidity Sensor
+To install the dependencies and libraries from source (recommended), run the following commands in the raspberry pi terminal
+
+    cd ~
+    cd Gast_Iot_Sensor_Development
+    cd Adafruit_Python_DHT
     sudo python setup.py install
 
 # Installing Dependencies and Libraries for the Hologram Nova Cellular Modem

@@ -1,5 +1,5 @@
 import time
-time.sleep(20)
+#time.sleep(20)
 #importing the libraries that are needed from the iothub_client library
 #This is the library for  communicating with the IOT hub on Azure
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider, IoTHubClientResult
@@ -32,8 +32,8 @@ import Adafruit_MCP3008
 import Adafruit_DHT
 
 # the first command creates an object which allows connection to the hologram cloud. The next command actually initalizes a connection to the hologram cloud.
-hologram = HologramCloud(dict(), network='cellular')
-result = hologram.network.connect()
+#hologram = HologramCloud(dict(), network='cellular')
+#result = hologram.network.connect()
 
 
 

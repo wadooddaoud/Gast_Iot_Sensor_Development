@@ -1,4 +1,5 @@
-
+import time
+time.sleep(20)
 #importing the libraries that are needed from the iothub_client library
 #This is the library for  communicating with the IOT hub on Azure
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider, IoTHubClientResult
@@ -15,7 +16,6 @@ import RPi.GPIO as GPIO
 import sys,re
 import math
 import numpy as np
-import time
 
 #import the telemetry class which allows communication with iothubclient. Telemetry is basically the eyes and ears of the IoT device. We use the telemetry module to
 # connect to the IoT Hub

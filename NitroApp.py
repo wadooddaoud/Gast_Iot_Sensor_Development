@@ -1,5 +1,5 @@
 import time
-time.sleep(20)
+#time.sleep(20)
 #importing the libraries that are needed from the iothub_client library
 #This is the library for  communicating with the IOT hub on Azure
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider, IoTHubClientResult
@@ -106,7 +106,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f"
 
 #This method is from Azure and it is printed in the IoT hub terminal and drives the messages that are recieved back from the IoT Hub which confirms that a message was recieved.
 def receive_message_callback(message, counter):

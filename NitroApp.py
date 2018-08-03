@@ -93,9 +93,8 @@ RECEIVE_CONTEXT = 0
 SEND_REPORTED_STATE_CALLBACKS = 0
 
 # These are the connection strings that allow for the IoT Device to be authenticated with the IoT Hub. The shared access key is critical to the IoT hub allowing a connection and can
-# be found on the IoT hub under the devices ---> "connection string primary". First is for the E7 device and the second is for the endurance unit.
-#CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
-CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=qFWvwLuI3TE0LZOH38pEus6U2JYwfAiAFt0qdOwGHxg='
+# be found on the IoT hub under the devices ---> "connection string primary".
+CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
 
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
@@ -107,8 +106,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-#MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
-MSG_TXT = "{\"deviceId\": \"EnduranceCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #This method is from Azure and it is printed in the IoT hub terminal and drives the messages that are recieved back from the IoT Hub which confirms that a message was recieved.
 def receive_message_callback(message, counter):

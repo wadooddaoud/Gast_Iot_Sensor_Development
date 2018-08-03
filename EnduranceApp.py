@@ -94,8 +94,7 @@ SEND_REPORTED_STATE_CALLBACKS = 0
 
 # These are the connection strings that allow for the IoT Device to be authenticated with the IoT Hub. The shared access key is critical to the IoT hub allowing a connection and can
 # be found on the IoT hub under the devices ---> "connection string primary". First is for the E7 device and the second is for the endurance unit.
-#CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
-CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=qFWvwLuI3TE0LZOH38pEus6U2JYwfAiAFt0qdOwGHxg='
+CONNECTION_STRING_ENDURANCE = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=qFWvwLuI3TE0LZOH38pEus6U2JYwfAiAFt0qdOwGHxg='
 
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
@@ -107,8 +106,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-#MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
-MSG_TXT = "{\"deviceId\": \"EnduranceCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"EnduranceCellular\", \"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
 
 #This method is from Azure and it is printed in the IoT hub terminal and drives the messages that are recieved back from the IoT Hub which confirms that a message was recieved.
 def receive_message_callback(message, counter):
@@ -180,11 +178,11 @@ def iothub_client_sample_run():
     global dutyCycleArray
     global am2302HumidityArray
     try:
-        client_nitro = iothub_client_init(CONNECTION_STRING_NITRO, PROTOCOL)
-        if client_nitro.protocol == IoTHubTransportProvider.MQTT:
+        client_endur = iothub_client_init(CONNECTION_STRING_ENDURANCE, PROTOCOL)
+        if client_endur.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
             reported_state = "{\"newState\":\"standBy\"}"
-            client_nitro.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
+            client_endur.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, 0)
         telemetry.send_telemetry_data(parse_iot_hub_name,"success", "The connection to the IOT Hub has been established!")
         while True:
             global MESSAGE_COUNT, MESSAGE_SWITCH
@@ -206,16 +204,9 @@ def iothub_client_sample_run():
 		timeEpoch = int(time.time())
                 if len(dutyCycleArray) > 200:
                     dutyCycleArray = dutyCycleArray[1:150]
-                    
-                # This code below takes the data obtained from the Excel sheet named "LR-AP067-078.xls" and correlates duty cycle to nitrogen generated per second by the E7   
-                averageDutyCycle = 0.32816666667
-                averageSecondsPer1scf = (averageDutyCycle * 60*60)/6
-                averageNitroGenPerSec = 1/averageSecondsPer1scf
-                # added .0000001 to nitroGeneration because webapp doesnt update with zero
-                nitroGeneration = (globalTimeOn * averageNitroGenPerSec)+ .000001
                 
                 #The next lines of code deal with adding the variables to the MSG_TXT varialbe above and sending that message to the IoT hub client specified earlier in the document.
-                msg_text_formatted = MSG_TXT %(nitroGeneration,timeEpoch,globalTimeOn,dutyCycle,compState,thermocoupleTemperature,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
+                msg_text_formatted = MSG_TXT %(timeEpoch,globalTimeOn,dutyCycle,compState,thermocoupleTemperature,transducerPressure,c_to_f(am2302Temperature),am2302Humidity)
                 print(msg_text_formatted)
                 message = IoTHubMessage(msg_text_formatted)
                 # optional: assign ids
@@ -226,15 +217,13 @@ def iothub_client_sample_run():
                 prop_map.add("TemperatureAlert... ","true" if thermocoupleTemperature > 120.0 else "false")
 
                 #sending the message to the terminal from iotHub
-                client_nitro.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
+                client_endur.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
                 #client_junair.send_event_async(message,send_confirmation_callback,MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
                 
                 #sending  the send status to the terminal from the iotHub
-                status_nitro = client_nitro.get_send_status()
-                #status_junair = client_nitro.get_send_status()
-                print("Send status is... %s" % status_nitro)
-                #print("Send status is... %s" % status_junair)
+                status_endur = client_endur.get_send_status()
+                print("Send status is... %s" % status_endur)
                 MESSAGE_COUNT +=1
             time.sleep(2)
 

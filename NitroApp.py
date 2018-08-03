@@ -234,7 +234,7 @@ def iothub_client_sample_run():
                 print("Send status is... %s" % status_nitro)
                 #print("Send status is... %s" % status_junair)
                 MESSAGE_COUNT +=1
-            time.sleep(2)
+            time.sleep(1)
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )
@@ -250,7 +250,7 @@ def led_blink():
     global compRunning
     global globalTimeOn
     GPIO.output(LED_PIN_ADDRESS,GPIO.HIGH)
-    time.sleep(1)
+    time.sleep(0.5)
     GPIO.output(LED_PIN_ADDRESS, GPIO.LOW)
 
 #self explanatory method

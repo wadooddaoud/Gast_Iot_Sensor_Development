@@ -93,7 +93,7 @@ RECEIVE_CONTEXT = 0
 SEND_REPORTED_STATE_CALLBACKS = 0
 
 # These are the connection strings that allow for the IoT Device to be authenticated with the IoT Hub. The shared access key is critical to the IoT hub allowing a connection and can
-# be found on the IoT hub under the devices ---> "connection string primary". First is for the E7 device and the second is for the endurance unit.
+# be found on the IoT hub under the devices ---> "connection string primary".
 CONNECTION_STRING_ENDURANCE = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=qFWvwLuI3TE0LZOH38pEus6U2JYwfAiAFt0qdOwGHxg='
 
 #Using the MQTT protocol for sending messages. 
@@ -225,7 +225,7 @@ def iothub_client_sample_run():
                 status_endur = client_endur.get_send_status()
                 print("Send status is... %s" % status_endur)
                 MESSAGE_COUNT +=1
-            time.sleep(2)
+            time.sleep(1)
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )
@@ -241,7 +241,7 @@ def led_blink():
     global compRunning
     global globalTimeOn
     GPIO.output(LED_PIN_ADDRESS,GPIO.HIGH)
-    time.sleep(1)
+    time.sleep(0.5)
     GPIO.output(LED_PIN_ADDRESS, GPIO.LOW)
 
 #self explanatory method

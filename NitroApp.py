@@ -284,10 +284,10 @@ def CheckCompressorState():
     elif iRMS > .40 and compRunning == True:
         timeElapsed = time.time() - startTime
         startTime = time.time()
-        globalTimeOn = timeElapsed
+        globalTimeOn += timeElapsed
     elif iRMS <.40 and compRunning == True:
         timeElapsed = time.time() - startTime
-        globalTimeOn = timeElapsed
+        globalTimeOn += timeElapsed
         compRunning = False
 
     if compRunning == True:

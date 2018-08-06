@@ -95,6 +95,7 @@ SEND_REPORTED_STATE_CALLBACKS = 0
 # These are the connection strings that allow for the IoT Device to be authenticated with the IoT Hub. The shared access key is critical to the IoT hub allowing a connection and can
 # be found on the IoT hub under the devices ---> "connection string primary".
 CONNECTION_STRING_NITRO = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=NitroGenCellular;SharedAccessKey=F/cqWVnYF/k6hRQnxV/X7a9IP/FzF6ibV5HRSJ2PDAw='
+#CONNECTION_STRING_NITRO = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
@@ -106,7 +107,9 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f"
+MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+#MSG_TXT = "{\"deviceId\": \"JunAir 1.0\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f"
+
 
 #This method is from Azure and it is printed in the IoT hub terminal and drives the messages that are recieved back from the IoT Hub which confirms that a message was recieved.
 def receive_message_callback(message, counter):
@@ -196,8 +199,8 @@ def iothub_client_sample_run():
                 if len(am2302HumidityArray) > 100:
                     am2302HumidityArray = am2302HumidityArray[1:50]
 		am2302HumidityArray.append(am2302Humidity)
-		# added .0000001 to nitroGeneration because webapp doesnt update with zero
-                transducerPressure  = ((mcp.read_adc(0)-72)*150.0/595.2)+.000001
+		# added .0000001 to transducerPressure because webapp doesnt update with zero
+                transducerPressure  = ((mcp.read_adc(0)-72)*150.0/595.2)+ .000001
                 compState = CheckCompressorState()
                 dutyCycleArray.append(compState)
                 dutyCycle = calculateDutyCycle()*100
@@ -242,7 +245,6 @@ def iothub_client_sample_run():
         return
     except KeyboardInterrupt:
         print ( "IoTHubClient sample stopped" )
-        print(globalTimeOn)
 
 
 #method to get the LED to blink for a specified amount of time
@@ -282,11 +284,12 @@ def CheckCompressorState():
     elif iRMS > .40 and compRunning == True:
         timeElapsed = time.time() - startTime
         startTime = time.time()
-        globalTimeOn += timeElapsed
+        globalTimeOn = timeElapsed
     elif iRMS <.40 and compRunning == True:
         timeElapsed = time.time() - startTime
-        globalTimeOn += timeElapsed
+        globalTimeOn = timeElapsed
         compRunning = False
+
     if compRunning == True:
         return 1
     else:

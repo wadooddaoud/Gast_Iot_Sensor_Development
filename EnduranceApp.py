@@ -95,6 +95,7 @@ SEND_REPORTED_STATE_CALLBACKS = 0
 # These are the connection strings that allow for the IoT Device to be authenticated with the IoT Hub. The shared access key is critical to the IoT hub allowing a connection and can
 # be found on the IoT hub under the devices ---> "connection string primary".
 CONNECTION_STRING_ENDURANCE = 'HostName=GastNitroGenHub.azure-devices.net;DeviceId=EnduranceCellular;SharedAccessKey=qFWvwLuI3TE0LZOH38pEus6U2JYwfAiAFt0qdOwGHxg='
+#CONNECTION_STRING_ENDURANCE = 'HostName=JA-TestProject.azure-devices.net;DeviceId=RasBerryOnlineTestBoard;SharedAccessKey=56PL8iS1Pb2i5SE2Qke8CXXIRLgmCwJVHL+CLauuW1o='
 
 #Using the MQTT protocol for sending messages. 
 #It is a lightweight messaging protocol for small devices and sensors
@@ -107,6 +108,8 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
 MSG_TXT = "{\"deviceId\": \"EnduranceCellular\", \"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+#MSG_TXT = "{\"deviceId\": \"JunAir 1.0\",\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f"
+
 
 #This method is from Azure and it is printed in the IoT hub terminal and drives the messages that are recieved back from the IoT Hub which confirms that a message was recieved.
 def receive_message_callback(message, counter):

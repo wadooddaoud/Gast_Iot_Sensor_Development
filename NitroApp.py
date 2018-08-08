@@ -107,7 +107,7 @@ GPIO.setup(LED_PIN_ADDRESS, GPIO.OUT)
 
 
 #this is the message text variable that gets sent to the IOT hub after being formatted with the respective variables
-MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"NitroGenCellular\", \"nitroGen\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermTemp\": %f,\"transPres\": %f,\"ambTemp\": %f,\"ambHum\": %f}"
 #MSG_TXT = "{\"deviceId\": \"JunAir 1.0\", \"nitroGeneration\": %f,\"timeEpoch\": %f, \"globalTimeOn\": %f,\"dutyCycle\": %f,\"compState\": %f ,\"thermocoupleTemperature\": %f,\"transducerPressure\": %f,\"am2302Temperature\": %f,\"am2302Humidity\": %f"
 
 
@@ -237,7 +237,7 @@ def iothub_client_sample_run():
                 print("Send status is... %s" % status_nitro)
                 #print("Send status is... %s" % status_junair)
                 MESSAGE_COUNT +=1
-            time.sleep(1)
+            time.sleep(2)
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )
@@ -252,7 +252,7 @@ def led_blink():
     global compRunning
     global globalTimeOn
     GPIO.output(LED_PIN_ADDRESS,GPIO.HIGH)
-    time.sleep(0.5)
+    time.sleep(1)
     GPIO.output(LED_PIN_ADDRESS, GPIO.LOW)
 
 #self explanatory method

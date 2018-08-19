@@ -72,7 +72,12 @@ To install the dependencies and libraries from source (recommended), run the fol
      curl -L hologram.io/python-install | bash
      curl -L hologram.io/python-update | bash
      
-     
+# Using Putty to interact with Raspberry Pi without a monitor (Headless)
+Connect the raspberry pi to the monitor, keyboard, and mouse and open up a terminal window
+The run the command below to find out the IP address of the raspberry pi
+Then you can open up the laptop with Putty installed, and enter the IP in the prompt. You should then be connected to pi after entering the login credentials
+
+     ifconfig
 
 # Running the application on the Raspberry Pi for the endurance unit
 

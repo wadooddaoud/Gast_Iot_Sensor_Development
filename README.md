@@ -71,3 +71,9 @@ To install the dependencies and libraries from source (recommended), run the fol
 
      curl -L hologram.io/python-install | bash
      curl -L hologram.io/python-update | bash
+     
+#Running the application on the Raspberry Pi for the endurance unit
+     sudo python EnduranceApp.py
+     
+#Running the application on the Raspberry Pi for the element 7 unit
+     sudo python NitroApp.py
